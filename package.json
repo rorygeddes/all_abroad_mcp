@@ -1,0 +1,21 @@
+{
+  "name": "allabroad-mcp",
+  "version": "0.1.0",
+  "description": "All Abroad MCP server — local stdio (v1) and remote OAuth/HTTP (v2) at mcp.allabroad.ai",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start":        "node server.js",
+    "dev":          "node --watch server.js",
+    "start:remote": "node remote/server.js",
+    "dev:remote":   "node --watch remote/server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@supabase/supabase-js": "^2.49.0",
+    "express": "^5.2.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

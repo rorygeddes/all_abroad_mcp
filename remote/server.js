@@ -25,7 +25,7 @@ import { mcpAuthRouter }                 from "@modelcontextprotocol/sdk/server/
 import { requireBearerAuth }             from "@modelcontextprotocol/sdk/server/auth/middleware/bearerAuth.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 
-import { AllAbroadOAuthProvider, handleLoginSubmit, getSupabaseJwtForMcpToken }
+import { AllAbroadOAuthProvider, handleLoginSubmit, handleGoogleComplete, getSupabaseJwtForMcpToken }
   from "./oauth-provider.js";
 
 // ── Tool registry ─────────────────────────────────────────────────────────────
@@ -81,8 +81,11 @@ app.use(
   })
 );
 
-// ── Login form submit ─────────────────────────────────────────────────────────
+// ── Login form submit (email/password path) ───────────────────────────────────
 app.post("/oauth/login", handleLoginSubmit);
+
+// ── Google OAuth completion (called by login.html JS after Google redirect) ───
+app.post("/oauth/google-complete", handleGoogleComplete);
 
 // ── MCP endpoint ──────────────────────────────────────────────────────────────
 // Each request is stateless: a fresh Server + Transport is created, used,

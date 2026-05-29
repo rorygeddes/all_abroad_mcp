@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign in to All Abroad</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -32,7 +33,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 28px;
+      margin-bottom: 16px;
     }
 
     .logo-mark {
@@ -53,6 +54,26 @@
       letter-spacing: -0.5px;
     }
 
+    .context-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #0d1f38;
+      border: 1px solid #1a3456;
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 12px;
+      color: #38bdf8;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+
+    .context-badge svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
     .heading {
       font-size: 22px;
       font-weight: 700;
@@ -64,28 +85,84 @@
     .subheading {
       font-size: 14px;
       color: #6b8db0;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
       line-height: 1.5;
     }
 
-    .context-badge {
-      display: inline-flex;
+    /* Google button */
+    .google-btn {
+      width: 100%;
+      height: 52px;
+      margin-bottom: 18px;
+      background: linear-gradient(135deg, #1a3456 0%, #1e3a5f 100%);
+      border: 1px solid #2a4a70;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
       align-items: center;
-      gap: 6px;
-      background: #0d1f38;
-      border: 1px solid #1a3456;
-      border-radius: 20px;
-      padding: 5px 12px;
-      font-size: 12px;
-      color: #38bdf8;
-      margin-bottom: 24px;
-      font-weight: 500;
+      justify-content: center;
+      gap: 10px;
+      transition: opacity 0.15s;
+      font-family: inherit;
+      color: #e8eef8;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.1px;
     }
 
-    .context-badge svg {
-      width: 14px;
-      height: 14px;
-      flex-shrink: 0;
+    .google-btn:hover:not(:disabled) { opacity: 0.82; }
+    .google-btn:disabled { opacity: 0.55; cursor: wait; }
+
+    /* Divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: #1a2a44;
+    }
+
+    .divider-text {
+      font-size: 12px;
+      color: #3a5a7a;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    /* Tab switcher */
+    .tab-row {
+      display: flex;
+      gap: 4px;
+      background: #050d1a;
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 20px;
+      border: 1px solid #1a2a44;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 8px;
+      border-radius: 7px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: inherit;
+      transition: all 0.15s;
+      background: transparent;
+      color: #6b8db0;
+    }
+
+    .tab-btn.active {
+      background: #0a1628;
+      color: #e8eef8;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.4);
     }
 
     .field {
@@ -112,6 +189,7 @@
       font-size: 15px;
       outline: none;
       transition: border-color 0.15s;
+      font-family: inherit;
     }
 
     input[type="email"]:focus,
@@ -121,18 +199,29 @@
 
     input::placeholder { color: #2a3f5a; }
 
-    .error-box {
-      background: #1a0d0d;
-      border: 1px solid #4a1a1a;
+    /* Error / success boxes */
+    .msg-box {
+      padding: 10px 14px;
       border-radius: 10px;
-      padding: 12px 14px;
+      margin-bottom: 14px;
       font-size: 13px;
-      color: #f08080;
-      margin-bottom: 18px;
+      line-height: 1.5;
       display: none;
     }
 
-    .error-box.visible { display: block; }
+    .msg-box.visible { display: block; }
+
+    .msg-box.error {
+      background: #1a0d0d;
+      border: 1px solid #4a1a1a;
+      color: #f08080;
+    }
+
+    .msg-box.success {
+      background: #0d1a0d;
+      border: 1px solid #1a4a1a;
+      color: #6fcf97;
+    }
 
     .submit-btn {
       width: 100%;
@@ -147,13 +236,32 @@
       transition: opacity 0.15s, transform 0.1s;
       margin-top: 8px;
       letter-spacing: 0.1px;
+      font-family: inherit;
     }
 
-    .submit-btn:hover { opacity: 0.9; }
+    .submit-btn:hover:not(:disabled) { opacity: 0.9; }
     .submit-btn:active { transform: scale(0.99); }
     .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .divider {
+    .footer-links {
+      text-align: center;
+      margin-top: 14px;
+      font-size: 13px;
+      color: #6b8db0;
+    }
+
+    .link-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #38bdf8;
+      font-weight: 500;
+      font-size: 13px;
+      font-family: inherit;
+      padding: 0;
+    }
+
+    .divider-bottom {
       height: 1px;
       background: #1a2a44;
       margin: 28px 0;
@@ -170,9 +278,64 @@
       color: #38bdf8;
       text-decoration: none;
     }
+
+    /* Loading overlay */
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(5,13,26,0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 14px;
+      z-index: 10;
+    }
+
+    .loading-overlay.visible { display: flex; }
+
+    .loading-card {
+      background: #0a1628;
+      border: 1px solid #1a2a44;
+      border-radius: 16px;
+      padding: 28px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    .spinner {
+      width: 26px;
+      height: 26px;
+      border: 2.5px solid #1a2a44;
+      border-top-color: #2563eb;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      font-size: 14px;
+      font-weight: 500;
+      color: #6b8db0;
+    }
   </style>
 </head>
 <body>
+
+  <!-- Loading overlay shown during Google OAuth / MCP completion -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-card">
+      <div class="spinner"></div>
+      <span class="loading-text" id="loadingText">Connecting…</span>
+    </div>
+  </div>
+
   <div class="card">
     <div class="logo-row">
       <div class="logo-mark">✈️</div>
@@ -191,29 +354,63 @@
     <h1 class="heading">Sign in to All Abroad</h1>
     <p class="subheading">Claude is requesting access to your All Abroad account. Sign in to let it see your trips, plans, and friends.</p>
 
-    <div class="error-box" id="errorBox">__ERROR__</div>
+    <!-- Error / success -->
+    <div class="msg-box error"   id="errorBox"></div>
+    <div class="msg-box success" id="successBox"></div>
 
-    <form method="POST" action="/oauth/login" id="loginForm">
+    <!-- Google button -->
+    <button class="google-btn" id="googleBtn" type="button">
+      <svg width="20" height="20" viewBox="0 0 24 24">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      <span id="googleLabel">Continue with Google</span>
+    </button>
+
+    <!-- Divider -->
+    <div class="divider">
+      <div class="divider-line"></div>
+      <span class="divider-text">or continue with email</span>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- Tab row — Sign In / Sign Up -->
+    <div class="tab-row" id="tabRow">
+      <button class="tab-btn active" id="tabSignIn" type="button">Sign In</button>
+      <button class="tab-btn"        id="tabSignUp" type="button">Sign Up</button>
+    </div>
+
+    <!-- Form -->
+    <form id="loginForm" method="POST" action="/oauth/login">
       <input type="hidden" name="client_id"      value="__CLIENT_ID__" />
       <input type="hidden" name="redirect_uri"   value="__REDIRECT_URI__" />
       <input type="hidden" name="state"          value="__STATE__" />
       <input type="hidden" name="code_challenge" value="__CODE_CHALLENGE__" />
       <input type="hidden" name="scope"          value="__SCOPE__" />
+      <input type="hidden" name="mode"           id="modeField" value="signin" />
 
       <div class="field">
         <label for="email">Email</label>
-        <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+        <input type="email" id="email" name="email" placeholder="you@example.com"
+               autocomplete="email" required />
       </div>
 
-      <div class="field">
+      <div class="field" id="passwordWrap">
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required />
+        <input type="password" id="password" name="password" placeholder="••••••••"
+               autocomplete="current-password" />
       </div>
 
-      <button type="submit" class="submit-btn" id="submitBtn">Sign in &amp; Connect</button>
+      <button type="submit" class="submit-btn" id="submitBtn">Sign In</button>
     </form>
 
-    <div class="divider"></div>
+    <p class="footer-links" id="footerLinks">
+      Forgot password?&nbsp;<button class="link-btn" id="magicBtn">Use a magic link</button>
+    </p>
+
+    <div class="divider-bottom"></div>
 
     <p class="privacy-note">
       Only your trips, plans, and friend list will be shared — nothing else.<br/>
@@ -222,18 +419,167 @@
   </div>
 
   <script>
-    // Show error box if server injected an error message
-    const errorBox = document.getElementById('errorBox');
-    if (errorBox && errorBox.textContent.trim().length > 0 && !errorBox.textContent.includes('__ERROR__')) {
-      errorBox.style.display = 'block';
+    // ── Config injected by the MCP server ──────────────────────────────────
+    const SUPABASE_URL      = '__SUPABASE_URL__';
+    const SUPABASE_ANON_KEY = '__SUPABASE_ANON_KEY__';
+    const MCP = {
+      client_id:      '__CLIENT_ID__',
+      redirect_uri:   '__REDIRECT_URI__',
+      state:          '__STATE__',
+      code_challenge: '__CODE_CHALLENGE__',
+      scope:          '__SCOPE__',
+    };
+
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ── DOM refs ────────────────────────────────────────────────────────────
+    const $  = (id) => document.getElementById(id);
+    const errorBox   = $('errorBox');
+    const successBox = $('successBox');
+    const submitBtn  = $('submitBtn');
+    const googleBtn  = $('googleBtn');
+    const overlay    = $('loadingOverlay');
+
+    function showError(msg)   { errorBox.textContent = msg;   errorBox.classList.add('visible');   successBox.classList.remove('visible'); }
+    function showSuccess(msg) { successBox.textContent = msg; successBox.classList.add('visible'); errorBox.classList.remove('visible'); }
+    function clearMsgs()      { errorBox.classList.remove('visible'); successBox.classList.remove('visible'); }
+    function showLoading(msg) { $('loadingText').textContent = msg || 'Connecting…'; overlay.classList.add('visible'); }
+
+    // ── Mode state ──────────────────────────────────────────────────────────
+    let mode = 'signin';
+
+    function setMode(m) {
+      mode = m;
+      clearMsgs();
+      $('modeField').value = m;
+
+      const isMagic = m === 'magic';
+      googleBtn.style.display     = isMagic ? 'none' : '';
+      $('tabRow').style.display   = isMagic ? 'none' : '';
+      $('passwordWrap').style.display = isMagic ? 'none' : '';
+      submitBtn.textContent = m === 'signin' ? 'Sign In' : m === 'signup' ? 'Create Account' : 'Send Magic Link';
+      $('footerLinks').innerHTML = isMagic
+        ? '<button class="link-btn" id="backBtn">← Back to sign in</button>'
+        : 'Forgot password?&nbsp;<button class="link-btn" id="magicBtn">Use a magic link</button>';
+      bindFooter();
+
+      [$('tabSignIn'), $('tabSignUp')].forEach(b => b && b.classList.remove('active'));
+      if (m === 'signin' && $('tabSignIn')) $('tabSignIn').classList.add('active');
+      if (m === 'signup' && $('tabSignUp')) $('tabSignUp').classList.add('active');
     }
 
-    // Disable button while submitting
-    document.getElementById('loginForm').addEventListener('submit', () => {
-      const btn = document.getElementById('submitBtn');
-      btn.disabled = true;
-      btn.textContent = 'Signing in…';
+    function bindFooter() {
+      const magic = $('magicBtn');
+      const back  = $('backBtn');
+      if (magic) magic.addEventListener('click', () => setMode('magic'));
+      if (back)  back.addEventListener('click', () => setMode('signin'));
+    }
+    bindFooter();
+
+    $('tabSignIn').addEventListener('click', () => setMode('signin'));
+    $('tabSignUp').addEventListener('click', () => setMode('signup'));
+
+    // ── Email/password form submit ───────────────────────────────────────────
+    $('loginForm').addEventListener('submit', async (e) => {
+      if (mode !== 'magic') {
+        // Let the form POST to /oauth/login normally
+        clearMsgs();
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Please wait…';
+        return;
+      }
+
+      // Magic link — handle client-side
+      e.preventDefault();
+      clearMsgs();
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+
+      const email = $('email').value.trim();
+      if (!email) { showError('Enter your email first.'); submitBtn.disabled = false; submitBtn.textContent = 'Send Magic Link'; return; }
+
+      const { error } = await db.auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: false },
+      });
+
+      if (error) {
+        showError(error.message);
+      } else {
+        showSuccess('Check your inbox — a magic link is on its way.');
+      }
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send Magic Link';
     });
+
+    // ── Google sign-in ──────────────────────────────────────────────────────
+    googleBtn.addEventListener('click', async () => {
+      clearMsgs();
+      googleBtn.disabled = true;
+      $('googleLabel').textContent = 'Connecting…';
+      showLoading('Redirecting to Google…');
+
+      const { error } = await db.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          // Redirect back to THIS exact URL so the MCP params survive
+          redirectTo: window.location.href,
+          queryParams: { access_type: 'offline', prompt: 'select_account' },
+        },
+      });
+
+      if (error) {
+        overlay.classList.remove('visible');
+        googleBtn.disabled = false;
+        $('googleLabel').textContent = 'Continue with Google';
+        showError(error.message);
+      }
+      // If no error, browser redirects — no further code runs
+    });
+
+    // ── Handle return from Google OAuth ────────────────────────────────────
+    // After Google completes, Supabase redirects back here with ?code=...
+    // The Supabase SDK auto-detects it and fires onAuthStateChange with SIGNED_IN.
+    const isOAuthReturn = new URLSearchParams(window.location.search).has('code')
+                       || window.location.hash.includes('access_token');
+
+    if (isOAuthReturn) {
+      showLoading('Signing you in…');
+    }
+
+    db.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session && isOAuthReturn) {
+        showLoading('Connecting to Claude…');
+        try {
+          const resp = await fetch('/oauth/google-complete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              ...MCP,
+              access_token:  session.access_token,
+              refresh_token: session.refresh_token,
+              user_id:       session.user.id,
+            }),
+          });
+          const data = await resp.json();
+          if (data.redirect_url) {
+            window.location.href = data.redirect_url;
+          } else {
+            overlay.classList.remove('visible');
+            showError(data.error || 'Something went wrong. Please try again.');
+          }
+        } catch {
+          overlay.classList.remove('visible');
+          showError('Connection failed. Please try again.');
+        }
+      }
+    });
+
+    // ── Show server-injected error (from email/password POST) ───────────────
+    const serverError = '__ERROR__';
+    if (serverError && !serverError.includes('__ERROR__') && serverError.trim()) {
+      showError(serverError);
+    }
   </script>
 </body>
 </html>

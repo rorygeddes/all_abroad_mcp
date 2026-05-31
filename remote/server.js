@@ -58,6 +58,9 @@ if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY || !proc
 // ── Express app ───────────────────────────────────────────────────────────────
 
 const app = express();
+// Trust Vercel's edge proxy so express-rate-limit can read the real client IP
+// from X-Forwarded-For without throwing a ValidationError.
+app.set("trust proxy", 1);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -74,10 +77,13 @@ const oauthProvider = new AllAbroadOAuthProvider();
 
 app.use(
   mcpAuthRouter({
-    provider:        oauthProvider,
-    issuerUrl:       new URL(SERVER_URL),
-    scopesSupported: ["allabroad:read"],
-    resourceName:    "All Abroad",
+    provider:          oauthProvider,
+    issuerUrl:         new URL(SERVER_URL),
+    // Scoping the protected resource to /mcp makes Claude discover the right
+    // metadata at /.well-known/oauth-protected-resource/mcp instead of 404-ing.
+    resourceServerUrl: new URL(`${SERVER_URL}/mcp`),
+    scopesSupported:   ["allabroad:read"],
+    resourceName:      "All Abroad",
   })
 );
 
@@ -91,7 +97,12 @@ app.post("/oauth/google-complete", handleGoogleComplete);
 // Each request is stateless: a fresh Server + Transport is created, used,
 // and immediately closed. Serverless-safe (Vercel).
 
-app.all("/mcp", requireBearerAuth({ verifier: oauthProvider }), async (req, res) => {
+app.all("/mcp", requireBearerAuth({
+  verifier:            oauthProvider,
+  // Include the resource metadata URL in every 401 WWW-Authenticate header so
+  // Claude can discover the authorization server without guessing.
+  resourceMetadataUrl: `${SERVER_URL}/.well-known/oauth-protected-resource/mcp`,
+}), async (req, res) => {
   const mcpToken = req.auth.token;
 
   // Resolve a fresh Supabase JWT scoped to this user.

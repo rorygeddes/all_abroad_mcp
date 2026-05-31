@@ -89,8 +89,15 @@ class SupabaseClientsStore {
 
     if (error) throw new Error(`Client registration failed: ${error.message}`);
 
+    // IMPORTANT: client_secret and client_secret_expires_at MUST be returned so
+    // that Claude (the oauth client) has the secret it needs to authenticate when
+    // calling POST /token.  Omitting them here means Claude can never exchange
+    // an auth code for tokens — the primary bug we fixed.
     return {
       client_id:                  data.id,
+      client_secret:              data.client_secret ?? undefined,
+      // 0 = secret never expires (we don't store an expiry timestamp)
+      client_secret_expires_at:   0,
       redirect_uris:              data.redirect_uris,
       grant_types:                data.grant_types,
       response_types:             data.response_types,
@@ -284,7 +291,11 @@ export async function handleLoginSubmit(req, res) {
       return renderError("Something went wrong. Please try again.");
     }
 
-    await userClient.auth.signOut();
+    // Use scope:'local' — this clears the in-memory session without revoking
+    // the refresh token server-side.  A full signOut() would invalidate the
+    // supabase_refresh_token we just stored, causing every subsequent MCP tool
+    // call to fail with "session_expired" even though the user just signed in.
+    await userClient.auth.signOut({ scope: "local" });
 
     const callbackUrl = new URL(redirect_uri);
     callbackUrl.searchParams.set("code", authCode);

@@ -17,19 +17,31 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
-import { listTrips }      from "./tools/list_trips.js";
-import { getTripDetails } from "./tools/get_trip_details.js";
-import { listTripIdeas }  from "./tools/list_trip_ideas.js";
-import { getTripMembers } from "./tools/get_trip_members.js";
-import { listFriends }    from "./tools/list_friends.js";
+import { listTrips }        from "./tools/list_trips.js";
+import { getTripDetails }   from "./tools/get_trip_details.js";
+import { listTripIdeas }    from "./tools/list_trip_ideas.js";
+import { getTripMembers }   from "./tools/get_trip_members.js";
+import { listFriends }      from "./tools/list_friends.js";
+import { createTrip }       from "./tools/create_trip.js";
+import { addTripMember }    from "./tools/add_trip_member.js";
+import { inviteTripMember } from "./tools/invite_trip_member.js";
+import { addTripIdea }      from "./tools/add_trip_idea.js";
+import { updateTrip }       from "./tools/update_trip.js";
 
 // Registry. To add a tool: write it in tools/, import it above, add here.
 const TOOLS = [
+  // Read
   listTrips,
   getTripDetails,
   listTripIdeas,
   getTripMembers,
   listFriends,
+  // Write
+  createTrip,
+  addTripMember,
+  inviteTripMember,
+  addTripIdea,
+  updateTrip,
 ];
 
 const TOOL_BY_NAME = Object.fromEntries(TOOLS.map((t) => [t.name, t]));
@@ -45,7 +57,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     name:        t.name,
     description: t.description,
     inputSchema: t.inputSchema,
-    // All tools are read-only and scoped to the authenticated user's data.
+    // Annotations default to read-only; write tools declare their own.
     annotations: t.annotations ?? {
       readOnlyHint:    true,
       destructiveHint: false,

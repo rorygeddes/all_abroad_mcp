@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign in to All Abroad</title>
+  <title>Sign in to AllAbroad</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -13,270 +13,227 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #050d1a;
+      background: linear-gradient(145deg, #dbeafe 0%, #ede9fe 45%, #fce7f3 100%);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      color: #e8eef8;
+      color: #111827;
       padding: 24px;
     }
 
-    .card {
+    .container {
       width: 100%;
-      max-width: 400px;
-      background: #0a1628;
-      border: 1px solid #1a2a44;
-      border-radius: 20px;
-      padding: 40px 36px;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+      max-width: 380px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
     }
 
-    .logo-row {
+    /* Logo */
+    .logo-wrap {
       display: flex;
+      flex-direction: column;
       align-items: center;
       gap: 10px;
-      margin-bottom: 16px;
+      margin-bottom: 6px;
     }
 
-    .logo-mark {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
+    .logo-icon {
+      width: 64px;
+      height: 64px;
     }
 
-    .logo-name {
-      font-size: 22px;
+    .logo-title {
+      font-size: 28px;
       font-weight: 700;
-      color: #fff;
+      color: #1d4ed8;
       letter-spacing: -0.5px;
     }
 
-    .context-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: #0d1f38;
-      border: 1px solid #1a3456;
-      border-radius: 20px;
-      padding: 5px 12px;
-      font-size: 12px;
-      color: #38bdf8;
-      margin-bottom: 20px;
-      font-weight: 500;
-    }
-
-    .context-badge svg {
-      width: 14px;
-      height: 14px;
-      flex-shrink: 0;
-    }
-
-    .heading {
-      font-size: 22px;
-      font-weight: 700;
-      color: #fff;
+    .logo-sub {
+      font-size: 15px;
+      color: #6b7280;
+      text-align: center;
       margin-bottom: 6px;
-      letter-spacing: -0.3px;
+      line-height: 1.5;
     }
 
-    .subheading {
-      font-size: 14px;
-      color: #6b8db0;
-      margin-bottom: 28px;
+    /* Claude context note */
+    .claude-note {
+      font-size: 12.5px;
+      color: #6b7280;
+      text-align: center;
+      margin-bottom: 24px;
+      background: rgba(255,255,255,0.6);
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 20px;
+      padding: 5px 14px;
+    }
+
+    /* Form card */
+    .form-wrap {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* Error / success boxes */
+    .msg-box {
+      padding: 10px 14px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      font-size: 13px;
       line-height: 1.5;
+      display: none;
+      width: 100%;
+    }
+    .msg-box.visible { display: block; }
+    .msg-box.error   { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
+    .msg-box.success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; }
+
+    /* Tab row */
+    .tab-row {
+      display: flex;
+      background: rgba(0,0,0,0.06);
+      border-radius: 10px;
+      padding: 3px;
+      margin-bottom: 16px;
+      width: 100%;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 9px 8px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: inherit;
+      transition: all 0.15s;
+      background: transparent;
+      color: #6b7280;
+    }
+
+    .tab-btn.active {
+      background: #fff;
+      color: #1d4ed8;
+      font-weight: 600;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    }
+
+    /* Inputs */
+    .field {
+      margin-bottom: 10px;
+      width: 100%;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 14px 16px;
+      background: #fff;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 12px;
+      color: #111827;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      font-family: inherit;
+    }
+
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+    }
+
+    input::placeholder { color: #9ca3af; }
+
+    /* Primary button */
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: #1d4ed8;
+      border: none;
+      border-radius: 50px;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      margin-top: 6px;
+      margin-bottom: 16px;
+      font-family: inherit;
+    }
+
+    .submit-btn:hover:not(:disabled) { background: #1e40af; }
+    .submit-btn:active { transform: scale(0.99); }
+    .submit-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    /* Divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      width: 100%;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: rgba(0,0,0,0.12);
+    }
+
+    .divider-text {
+      font-size: 13px;
+      color: #9ca3af;
+      white-space: nowrap;
     }
 
     /* Google button */
     .google-btn {
       width: 100%;
       height: 52px;
-      margin-bottom: 18px;
-      background: linear-gradient(135deg, #1a3456 0%, #1e3a5f 100%);
-      border: 1px solid #2a4a70;
-      border-radius: 12px;
+      background: #fff;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 50px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      transition: opacity 0.15s;
+      transition: background 0.15s, box-shadow 0.15s;
       font-family: inherit;
-      color: #e8eef8;
+      color: #111827;
       font-size: 15px;
-      font-weight: 600;
-      letter-spacing: -0.1px;
+      font-weight: 500;
     }
 
-    .google-btn:hover:not(:disabled) { opacity: 0.82; }
+    .google-btn:hover:not(:disabled) {
+      background: #f9fafb;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
     .google-btn:disabled { opacity: 0.55; cursor: wait; }
-
-    /* Divider */
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-
-    .divider-line {
-      flex: 1;
-      height: 1px;
-      background: #1a2a44;
-    }
-
-    .divider-text {
-      font-size: 12px;
-      color: #3a5a7a;
-      font-weight: 500;
-      white-space: nowrap;
-    }
-
-    /* Tab switcher */
-    .tab-row {
-      display: flex;
-      gap: 4px;
-      background: #050d1a;
-      border-radius: 10px;
-      padding: 4px;
-      margin-bottom: 20px;
-      border: 1px solid #1a2a44;
-    }
-
-    .tab-btn {
-      flex: 1;
-      padding: 8px;
-      border-radius: 7px;
-      border: none;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 500;
-      font-family: inherit;
-      transition: all 0.15s;
-      background: transparent;
-      color: #6b8db0;
-    }
-
-    .tab-btn.active {
-      background: #0a1628;
-      color: #e8eef8;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.4);
-    }
-
-    .field {
-      margin-bottom: 16px;
-    }
-
-    label {
-      display: block;
-      font-size: 13px;
-      font-weight: 500;
-      color: #7da8cc;
-      margin-bottom: 7px;
-      letter-spacing: 0.2px;
-    }
-
-    input[type="email"],
-    input[type="password"] {
-      width: 100%;
-      padding: 13px 16px;
-      background: #050d1a;
-      border: 1px solid #1a2a44;
-      border-radius: 12px;
-      color: #e8eef8;
-      font-size: 15px;
-      outline: none;
-      transition: border-color 0.15s;
-      font-family: inherit;
-    }
-
-    input[type="email"]:focus,
-    input[type="password"]:focus {
-      border-color: #2563eb;
-    }
-
-    input::placeholder { color: #2a3f5a; }
-
-    /* Error / success boxes */
-    .msg-box {
-      padding: 10px 14px;
-      border-radius: 10px;
-      margin-bottom: 14px;
-      font-size: 13px;
-      line-height: 1.5;
-      display: none;
-    }
-
-    .msg-box.visible { display: block; }
-
-    .msg-box.error {
-      background: #1a0d0d;
-      border: 1px solid #4a1a1a;
-      color: #f08080;
-    }
-
-    .msg-box.success {
-      background: #0d1a0d;
-      border: 1px solid #1a4a1a;
-      color: #6fcf97;
-    }
-
-    .submit-btn {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
-      border: none;
-      border-radius: 12px;
-      color: #fff;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.15s, transform 0.1s;
-      margin-top: 8px;
-      letter-spacing: 0.1px;
-      font-family: inherit;
-    }
-
-    .submit-btn:hover:not(:disabled) { opacity: 0.9; }
-    .submit-btn:active { transform: scale(0.99); }
-    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .footer-links {
       text-align: center;
-      margin-top: 14px;
+      margin-top: 16px;
       font-size: 13px;
-      color: #6b8db0;
+      color: #6b7280;
+      width: 100%;
     }
 
     .link-btn {
       background: none;
       border: none;
       cursor: pointer;
-      color: #38bdf8;
+      color: #2563eb;
       font-weight: 500;
       font-size: 13px;
       font-family: inherit;
       padding: 0;
-    }
-
-    .divider-bottom {
-      height: 1px;
-      background: #1a2a44;
-      margin: 28px 0;
-    }
-
-    .privacy-note {
-      font-size: 12px;
-      color: #3a5a7a;
-      text-align: center;
-      line-height: 1.6;
-    }
-
-    .privacy-note a {
-      color: #38bdf8;
-      text-decoration: none;
     }
 
     /* Loading overlay */
@@ -284,7 +241,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(5,13,26,0.7);
+      background: rgba(255,255,255,0.6);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       align-items: center;
@@ -297,21 +254,21 @@
     .loading-overlay.visible { display: flex; }
 
     .loading-card {
-      background: #0a1628;
-      border: 1px solid #1a2a44;
+      background: #fff;
+      border: 1px solid #e5e7eb;
       border-radius: 16px;
       padding: 28px 32px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 12px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
     }
 
     .spinner {
       width: 26px;
       height: 26px;
-      border: 2.5px solid #1a2a44;
+      border: 2.5px solid #e5e7eb;
       border-top-color: #2563eb;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
@@ -322,13 +279,13 @@
     .loading-text {
       font-size: 14px;
       font-weight: 500;
-      color: #6b8db0;
+      color: #6b7280;
     }
   </style>
 </head>
 <body>
 
-  <!-- Loading overlay shown during Google OAuth / MCP completion -->
+  <!-- Loading overlay -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-card">
       <div class="spinner"></div>
@@ -336,86 +293,87 @@
     </div>
   </div>
 
-  <div class="card">
-    <div class="logo-row">
-      <div class="logo-mark">✈️</div>
-      <span class="logo-name">All Abroad</span>
-    </div>
+  <div class="container">
 
-    <div class="context-badge">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-        <path d="M2 17l10 5 10-5"/>
-        <path d="M2 12l10 5 10-5"/>
+    <!-- Logo -->
+    <div class="logo-wrap">
+      <svg class="logo-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#3b82f6"/>
+            <stop offset="100%" stop-color="#2563eb"/>
+          </linearGradient>
+        </defs>
+        <!-- Letter A -->
+        <path d="M32 8 L52 52 H43 L38.5 40 H25.5 L21 52 H12 Z M32 20 L28 34 H36 Z" fill="url(#logoGrad)"/>
+        <!-- Plane accent line -->
+        <line x1="16" y1="32" x2="50" y2="20" stroke="url(#logoGrad)" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+        <polygon points="50,20 44,22 47,27" fill="url(#logoGrad)" opacity="0.7"/>
       </svg>
-      Connecting to Claude
+      <span class="logo-title">AllAbroad</span>
     </div>
 
-    <h1 class="heading">Sign in to All Abroad</h1>
-    <p class="subheading">Claude is requesting access to your All Abroad account. Sign in to let it see your trips, plans, and friends.</p>
+    <p class="logo-sub">Plan your exchange. Explore together.</p>
 
-    <!-- Error / success -->
-    <div class="msg-box error"   id="errorBox"></div>
-    <div class="msg-box success" id="successBox"></div>
+    <div class="claude-note">Connecting to Claude · Sign in to continue</div>
 
-    <!-- Google button -->
-    <button class="google-btn" id="googleBtn" type="button">
-      <svg width="20" height="20" viewBox="0 0 24 24">
-        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-      </svg>
-      <span id="googleLabel">Continue with Google</span>
-    </button>
+    <div class="form-wrap">
 
-    <!-- Divider -->
-    <div class="divider">
-      <div class="divider-line"></div>
-      <span class="divider-text">or continue with email</span>
-      <div class="divider-line"></div>
-    </div>
+      <!-- Error / success -->
+      <div class="msg-box error"   id="errorBox"></div>
+      <div class="msg-box success" id="successBox"></div>
 
-    <!-- Tab row — Sign In / Sign Up -->
-    <div class="tab-row" id="tabRow">
-      <button class="tab-btn active" id="tabSignIn" type="button">Sign In</button>
-      <button class="tab-btn"        id="tabSignUp" type="button">Sign Up</button>
-    </div>
-
-    <!-- Form -->
-    <form id="loginForm" method="POST" action="/oauth/login">
-      <input type="hidden" name="client_id"      value="__CLIENT_ID__" />
-      <input type="hidden" name="redirect_uri"   value="__REDIRECT_URI__" />
-      <input type="hidden" name="state"          value="__STATE__" />
-      <input type="hidden" name="code_challenge" value="__CODE_CHALLENGE__" />
-      <input type="hidden" name="scope"          value="__SCOPE__" />
-      <input type="hidden" name="mode"           id="modeField" value="signin" />
-
-      <div class="field">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" placeholder="you@example.com"
-               autocomplete="email" required />
+      <!-- Tab row -->
+      <div class="tab-row" id="tabRow">
+        <button class="tab-btn active" id="tabSignIn" type="button">Sign In</button>
+        <button class="tab-btn"        id="tabSignUp" type="button">Sign Up</button>
       </div>
 
-      <div class="field" id="passwordWrap">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="••••••••"
-               autocomplete="current-password" />
+      <!-- Form -->
+      <form id="loginForm" method="POST" action="/oauth/login">
+        <input type="hidden" name="client_id"      value="__CLIENT_ID__" />
+        <input type="hidden" name="redirect_uri"   value="__REDIRECT_URI__" />
+        <input type="hidden" name="state"          value="__STATE__" />
+        <input type="hidden" name="code_challenge" value="__CODE_CHALLENGE__" />
+        <input type="hidden" name="scope"          value="__SCOPE__" />
+        <input type="hidden" name="mode"           id="modeField" value="signin" />
+
+        <div class="field">
+          <input type="email" id="email" name="email" placeholder="Email address"
+                 autocomplete="email" required />
+        </div>
+
+        <div class="field" id="passwordWrap">
+          <input type="password" id="password" name="password" placeholder="Password"
+                 autocomplete="current-password" />
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">Sign In</button>
+      </form>
+
+      <!-- Divider -->
+      <div class="divider">
+        <div class="divider-line"></div>
+        <span class="divider-text">or continue with</span>
+        <div class="divider-line"></div>
       </div>
 
-      <button type="submit" class="submit-btn" id="submitBtn">Sign In</button>
-    </form>
+      <!-- Google button -->
+      <button class="google-btn" id="googleBtn" type="button">
+        <svg width="20" height="20" viewBox="0 0 24 24">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        <span id="googleLabel">Continue with Google</span>
+      </button>
 
-    <p class="footer-links" id="footerLinks">
-      Forgot password?&nbsp;<button class="link-btn" id="magicBtn">Use a magic link</button>
-    </p>
+      <p class="footer-links" id="footerLinks">
+        Forgot password?&nbsp;<button class="link-btn" id="magicBtn">Use a magic link</button>
+      </p>
 
-    <div class="divider-bottom"></div>
-
-    <p class="privacy-note">
-      Only your trips, plans, and friend list will be shared — nothing else.<br/>
-      <a href="https://allabroad.ai/privacy" target="_blank">Privacy policy</a>
-    </p>
+    </div>
   </div>
 
   <script>
@@ -482,14 +440,12 @@
     // ── Email/password form submit ───────────────────────────────────────────
     $('loginForm').addEventListener('submit', async (e) => {
       if (mode !== 'magic') {
-        // Let the form POST to /oauth/login normally
         clearMsgs();
         submitBtn.disabled = true;
         submitBtn.textContent = 'Please wait…';
         return;
       }
 
-      // Magic link — handle client-side
       e.preventDefault();
       clearMsgs();
       submitBtn.disabled = true;
@@ -522,7 +478,6 @@
       const { error } = await db.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          // Redirect back to THIS exact URL so the MCP params survive
           redirectTo: window.location.href,
           queryParams: { access_type: 'offline', prompt: 'select_account' },
         },
@@ -534,12 +489,9 @@
         $('googleLabel').textContent = 'Continue with Google';
         showError(error.message);
       }
-      // If no error, browser redirects — no further code runs
     });
 
     // ── Handle return from Google OAuth ────────────────────────────────────
-    // After Google completes, Supabase redirects back here with ?code=...
-    // The Supabase SDK auto-detects it and fires onAuthStateChange with SIGNED_IN.
     const isOAuthReturn = new URLSearchParams(window.location.search).has('code')
                        || window.location.hash.includes('access_token');
 
